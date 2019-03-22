@@ -6,7 +6,7 @@
 # TODO: error handling
 # TODO: more proper usage of python (e.g. git module instad of check_output)
 # TODO: sanity checking if called from right directory and status of repo
-# TODO: python3 compatibility
+# TODO: python2 compatibility
 # WISH: symlinking and submodule handling for main repo
 
 import os
@@ -81,14 +81,13 @@ def create_repo():
             indent=2,
             separators=(',', ': ')
             ))
-
         sys.exit(1)
-        my_run(["curl",
-                "--header", "PRIVATE-TOKEN: {}".format(Token),
-                "-X", "POST",
-                "https://gitlab.cern.ch/api/v4/projects/{}/share?group_id=120&group_access=20".format(repo_conf["id"])
-                ])
-        print("TODO share with LHCb")
+
+    my_run(["curl",
+            "--header", "PRIVATE-TOKEN: {}".format(Token),
+            "-X", "POST",
+            "https://gitlab.cern.ch/api/v4/projects/{}/share?group_id=120&group_access=20".format(repo_conf["id"])
+            ])
 
     if WorldPublic:
         try:
@@ -97,7 +96,7 @@ def create_repo():
             my_run(["git", "rm", "LICENSE.int.md"])
         except subprocess.CalledProcessError:
             if os.path.isfile("LICENSE.md"):
-                print("could not replace LICENSE.md by LICENSE.int.md. Assume this has already been done.")
+                print("could not replace LICENSE.md by LICENSE.pub.md. Assume this has already been done.")
             else:
                 raise
     else:
@@ -115,7 +114,7 @@ def create_repo():
         check_output(["git", "rm", "logo.png"])
 
     with open("./header.tex", "a") as header:
-        header.write('\\newcommand{{\gitlablink}}{{\myhref{{{realurl}}}{{{escapedurl}}}}}\n'.format(realurl=repo_conf['web_url'], escapedurl=repo_conf['web_url'].replace("_", r'\_')))
+        header.write('\\newcommand{{\\gitlablink}}{{\\myhref{{{realurl}}}{{{escapedurl}}}}}\n'.format(realurl=repo_conf['web_url'], escapedurl=repo_conf['web_url'].replace("_", r'\_')))
 
     return repo_conf
 
@@ -149,11 +148,13 @@ def push():
     except:
         # pushout unknown ...
         try:
-            print("push did ", pushout)
+            print("Push did: ", pushout)
         except:
-            print("push failed")
-            print("origin is set up and stuff, just fix the push error")
-            print("maybe authenticate")
+            print("Push failed.")
+            print("The remote 'origin' is set up, only push failed.")
+            print("Possibly an authentication error.")
+            print("The attempted push command was:")
+            print("git push --set-upstream gitlab {}:master".format(current_branch_name()))
 
 
 def qrgen():
