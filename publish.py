@@ -13,12 +13,18 @@ import os
 import re
 import sys
 import json
-from subprocess import check_output
+from subprocess import check_output, check_call, CalledProcessError
 import subprocess
 
 WorldPublic = True
 TrivialName = os.path.basename(os.getcwd())
 Token = os.environ["GITLABTOKEN"]
+
+try:
+    check_call(["klist"])
+except CalledProcessError:
+    print("create kerberos token for pushing")
+    os.Exit(1)
 
 
 def my_run(*args, **kwargs):
