@@ -157,7 +157,7 @@ def push():
             print("Push did: ", pushout)
         except:
             print("Push failed.")
-            print("The remote 'origin' is set up, only push failed.")
+            print("The remote 'gitlab' is set up, only push failed.")
             print("Possibly an authentication error.")
             print("The attempted push command was:")
             print("git push --set-upstream gitlab {}:master".format(current_branch_name()))
